@@ -691,6 +691,12 @@ bool jtag_poll_get_enabled(void);
  */
 void jtag_poll_set_enabled(bool value);
 
+/**
+ * swd
+ */
+extern void swd_add_sequence(uint8_t *seq, uint16_t len);
+extern void swd_add_transact_out(uint8_t apndp, uint8_t rnw, uint8_t reg, uint32_t out_value, uint8_t* ack);
+extern void swd_add_transact_in(uint8_t apndp, uint8_t rnw, uint8_t reg, uint32_t* in_value, uint8_t* ack);
 
 /* The minidriver may have inline versions of some of the low
  * level APIs that are used in inner loops. */

@@ -34,6 +34,8 @@
 #include "jtag.h"
 #include "interface.h"
 
+int swd_mode = 0;
+
 /**
  * @see tap_set_state() and tap_get_state() accessors.
  * Actual name is not important since accessors hide it.

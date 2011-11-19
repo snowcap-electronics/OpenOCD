@@ -513,6 +513,80 @@ void interface_jtag_add_callback(jtag_callback1_t callback, jtag_callback_data_t
 	jtag_add_callback4(jtag_convert_to_callback4, data0, (jtag_callback_data_t)callback, 0, 0);
 }
 
+/**
+ * see swd_add_sequence()
+ *
+ */
+int interface_swd_add_sequence(uint8_t * seq, uint16_t len)
+{
+	struct jtag_command * cmd		= cmd_queue_alloc(sizeof(struct jtag_command));
+	struct swd_seq_command * s		= cmd_queue_alloc(sizeof(struct scan_command));
+
+	jtag_queue_command(cmd);
+	cmd->type						= SWD_SEQ;
+	cmd->cmd.swd_seq				= s;
+	s->num_bits						= len;
+	s->bits							= buf_cpy(seq, cmd_queue_alloc(DIV_ROUND_UP(len, 8)), len);
+
+	return ERROR_OK;
+}
+
+/**
+ * see swd_add_transact_out()
+ *
+ */
+int interface_swd_add_transact_out(uint8_t apndp, uint8_t rnw, uint8_t reg, uint32_t out_value, uint8_t* ack)
+{
+	uint8_t parity = 0, request;
+	struct jtag_command * cmd		= cmd_queue_alloc(sizeof(struct jtag_command));
+	struct swd_transact_command * t	= cmd_queue_alloc(sizeof(struct scan_command));
+
+	request = ((apndp & 1) << 1) | ((rnw & 1) << 2) | ((reg & 0x0C) << 1);
+
+	if (request & 0x02) parity++;
+	if (request & 0x04) parity++;
+	if (request & 0x08) parity++;
+	if (request & 0x10) parity++;
+	request |= 0x81 | ((parity & 0x01) << 5);
+
+	jtag_queue_command(cmd);
+	cmd->type						= SWD_TRANSACT;
+	cmd->cmd.swd_transact			= t;
+	t->request						= request;
+	t->data							= (uint32_t*)buf_cpy((uint8_t*)&out_value, cmd_queue_alloc(4), 32);
+	t->ack							= ack;
+
+	return ERROR_OK;
+}
+
+/**
+ * see swd_add_transact_in()
+ *
+ */
+int interface_swd_add_transact_in(uint8_t apndp, uint8_t rnw, uint8_t reg, uint32_t* in_value, uint8_t* ack)
+{
+	uint8_t parity = 0, request;
+	struct jtag_command * cmd		= cmd_queue_alloc(sizeof(struct jtag_command));
+	struct swd_transact_command * t	= cmd_queue_alloc(sizeof(struct scan_command));
+
+	request = ((apndp & 1) << 1) | ((rnw & 1) << 2) | ((reg & 0x0C) << 1);
+
+	if (request & 0x02) parity++;
+	if (request & 0x04) parity++;
+	if (request & 0x08) parity++;
+	if (request & 0x10) parity++;
+	request |= 0x81 | ((parity & 0x01) << 5);
+
+	jtag_queue_command(cmd);
+	cmd->type						= SWD_TRANSACT;
+	cmd->cmd.swd_transact			= t;
+	t->request						= request;
+	t->data							= in_value;
+	t->ack							= ack;
+
+	return ERROR_OK;
+}
+
 
 /* A minidriver can use use an inline versions of this API level fn */
 void jtag_add_dr_out(struct jtag_tap* tap,

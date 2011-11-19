@@ -36,6 +36,7 @@
  * cable.
  */
 
+extern int swd_mode;
 
 /** implementation of wrapper function tap_set_state() */
 void tap_set_state_impl(tap_state_t new_state);
