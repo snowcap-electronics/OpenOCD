@@ -439,6 +439,7 @@ const struct dap_ops jtag_dp_ops = {
 	.queue_ap_read =	jtag_ap_q_read,
 	.queue_ap_write =	jtag_ap_q_write,
 	.queue_ap_abort =	jtag_ap_q_abort,
+	.queue_dp_scan =	adi_jtag_dp_scan,
 	.run =			jtag_dp_run,
 };
 

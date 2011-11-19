@@ -84,6 +84,12 @@ int interface_jtag_add_sleep(uint32_t us);
 int interface_jtag_add_clocks(int num_cycles);
 int interface_jtag_execute_queue(void);
 
+int interface_swd_add_sequence(uint8_t* seq, uint16_t len);
+int interface_swd_add_transact_out(uint8_t apndp, uint8_t rnw, 
+						uint8_t reg, uint32_t out_value, uint8_t* ack);
+int interface_swd_add_transact_in(uint8_t apndp, uint8_t rnw, 
+						uint8_t reg, uint32_t* in_value, uint8_t* ack);
+
 /**
  * Calls the interface callback to execute the queue.  This routine
  * is used by the JTAG driver layer and should not be called directly.

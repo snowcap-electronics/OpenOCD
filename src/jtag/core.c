@@ -687,7 +687,7 @@ void jtag_add_reset(int req_tlr_or_trst, int req_srst)
 	 *
 	 * TAP_RESET should be invisible to non-debug parts of the system.
 	 */
-	if (trst_with_tlr) {
+	if (!swd_mode && trst_with_tlr) {
 		LOG_DEBUG("JTAG reset with TLR instead of TRST");
 		jtag_add_tlr();
 
@@ -1499,6 +1499,11 @@ int jtag_init_reset(struct command_context *cmd_ctx)
 	if (retval != ERROR_OK)
 		return retval;
 
+	if (swd_mode)
+	{
+		return ERROR_OK;
+	}
+
 	/* Check that we can communication on the JTAG chain + eventually we want to
 	 * be able to perform enumeration only after OpenOCD has started
 	 * telnet and GDB server
@@ -1737,4 +1742,25 @@ static void jtag_constructor(void)
 bool transport_is_jtag(void)
 {
 	return get_current_transport() == &jtag_transport;
+}
+
+void swd_add_sequence(uint8_t *seq, uint16_t len)
+{
+	int retval;
+	retval = interface_swd_add_sequence(seq, len);
+	jtag_set_error(retval);
+}
+
+void swd_add_transact_out(uint8_t apndp, uint8_t rnw, uint8_t reg, uint32_t out_value, uint8_t* ack)
+{
+	int retval;
+	retval = interface_swd_add_transact_out(apndp, rnw, reg, out_value, ack);
+	jtag_set_error(retval);
+}
+
+void swd_add_transact_in(uint8_t apndp, uint8_t rnw, uint8_t reg, uint32_t * in_value, uint8_t* ack)
+{
+	int retval;
+	retval = interface_swd_add_transact_in(apndp, rnw, reg, in_value, ack);
+	jtag_set_error(retval);
 }
