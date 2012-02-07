@@ -134,7 +134,6 @@ struct swd_transact_command {
  * structure of any defined type.
  */
 union jtag_command_container {
-<<<<<<< HEAD
 	struct scan_command *scan;
 	struct statemove_command *statemove;
 	struct pathmove_command *pathmove;
