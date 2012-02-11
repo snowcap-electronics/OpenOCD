@@ -894,9 +894,8 @@ static struct vsllink *vsllink_usb_open(void)
 			versaloon_interface.usb_setting.pid,
 			versaloon_interface.usb_setting.interface,
 			0, NULL, 2, "Versaloon");
-	if (NULL == dev)
+	if (NULL == dev) 
 		return NULL;
-	}
 
 	struct vsllink *result = malloc(sizeof(struct vsllink));
 	result->usb_handle = dev;
