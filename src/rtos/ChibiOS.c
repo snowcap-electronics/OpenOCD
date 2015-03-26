@@ -507,7 +507,15 @@ static int ChibiOS_get_thread_reg_list(struct rtos *rtos, int64_t thread_id, cha
 
 static int ChibiOS_get_symbol_list_to_lookup(symbol_table_elem_t *symbol_list[])
 {
-	*symbol_list = ChibiOS_symbol_list;
+	unsigned int i;
+	*symbol_list = malloc(sizeof(symbol_table_elem_t) * ARRAY_SIZE(ChibiOS_symbol_list));
+
+	for (i = 0; i < ARRAY_SIZE(ChibiOS_symbol_list); ++i) {
+	  (*symbol_list)[i].symbol_name = ChibiOS_symbol_list[i].symbol_name;
+	  (*symbol_list)[i].address = ChibiOS_symbol_list[i].address;
+	  (*symbol_list)[i].optional = ChibiOS_symbol_list[i].optional;
+	}
+
 	return 0;
 }
 
